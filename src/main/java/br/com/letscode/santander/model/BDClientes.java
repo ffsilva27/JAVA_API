@@ -1,6 +1,8 @@
 package br.com.letscode.santander.model;
 
+import br.com.letscode.santander.controler.Conta;
 import br.com.letscode.santander.dto.RequestCliente;
+import br.com.letscode.santander.dto.RequestDeposito;
 
 import java.util.*;
 
@@ -37,5 +39,22 @@ public class BDClientes {
         //ClienteModel clienteModel = (ClienteModel) BDClientes.clientes.stream().filter(cliente -> cliente.getId() == id);
         ClienteModel clienteModel = detalhesCliente(id);
         BDClientes.clientes.remove(clienteModel);
+    }
+
+    public void deposita(UUID id, RequestDeposito requestDeposito) throws Exception{
+        BDClientes.clientes.stream().filter(clientes -> Objects.equals(clientes.getId(),id))
+                .forEach(clientes -> {
+                    Optional<Conta> resultConta = clientes.getConta().stream().filter(conta->Objects.equals(conta.getId(),requestDeposito.getConta())).findAny();
+                    if(resultConta.isPresent()){
+                        double valor = resultConta.get().getSaldo() + requestDeposito.getDeposito();
+                        resultConta.get().setSaldo(valor);
+                    }else {
+                        try{
+                            throw new Exception("Conta não encontrada.");
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 }
