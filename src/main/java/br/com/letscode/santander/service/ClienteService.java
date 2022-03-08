@@ -33,4 +33,8 @@ public class ClienteService {
     public ClienteModel detalhesClientes(UUID id) throws Exception {
         return SantanderApplication.bdClientes.detalhesCliente(id);
     }
+
+    public ClienteModel atualizaCliente(UUID id, RequestCliente requestCliente) throws Exception {
+        return SantanderApplication.bdClientes.atualizaCliente(id, requestCliente);
+    }
 }
