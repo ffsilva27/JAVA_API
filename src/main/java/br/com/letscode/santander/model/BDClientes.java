@@ -3,6 +3,7 @@ package br.com.letscode.santander.model;
 import br.com.letscode.santander.controler.Conta;
 import br.com.letscode.santander.dto.RequestCliente;
 import br.com.letscode.santander.dto.RequestDeposito;
+import br.com.letscode.santander.exceptions.NotFoundException;
 
 import java.util.*;
 
@@ -17,16 +18,11 @@ public class BDClientes {
         return clientes;
     }
 
-    public ClienteModel detalhesCliente(UUID id) throws Exception{
-        Optional<ClienteModel> resultClienteModel = BDClientes.clientes.stream().filter(clientes -> Objects.equals(clientes.getId(),id)).findAny();
-        if(resultClienteModel.isPresent()){
-            return resultClienteModel.get();
-        }else {
-            throw new Exception("Usuário não encontrado");
-        }
+    public Optional<ClienteModel> detalhesCliente(UUID id) {
+        return BDClientes.clientes.stream().filter(clientes -> Objects.equals(clientes.getId(),id)).findAny();
     }
 
-    public ClienteModel atualizaCliente(UUID id, RequestCliente requestCliente) throws Exception {
+    public Optional<ClienteModel> atualizaCliente(UUID id, RequestCliente requestCliente) {
             BDClientes.clientes.stream().filter(clientes -> Objects.equals(clientes.getId(),id)).forEach(clientes -> {
             clientes.setNome(requestCliente.getNome());
             clientes.setEmail(requestCliente.getEmail());
@@ -35,10 +31,14 @@ public class BDClientes {
             return detalhesCliente(id);
     }
 
-    public void deletaCliente(UUID id) throws Exception {
-        //ClienteModel clienteModel = (ClienteModel) BDClientes.clientes.stream().filter(cliente -> cliente.getId() == id);
-        ClienteModel clienteModel = detalhesCliente(id);
-        BDClientes.clientes.remove(clienteModel);
+    public void deletaCliente(UUID id) throws NotFoundException {
+        Optional<ClienteModel> clienteModel = detalhesCliente(id);
+        if(clienteModel.isPresent()){
+            BDClientes.clientes.remove(clienteModel.get());
+        }else{
+            throw new NotFoundException("Cliente não encontrado.");
+        }
+
     }
 
     public void deposita(UUID id, RequestDeposito requestDeposito) throws Exception{

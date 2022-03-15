@@ -1,6 +1,7 @@
 package br.com.letscode.santander.config;
 
 import br.com.letscode.santander.exceptions.ErroValidacao;
+import br.com.letscode.santander.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -30,5 +31,11 @@ public class ErrorHandle {
             erros.add(erro);
         });
         return erros;
+    }
+
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public String lidarNaoEncontrado(NotFoundException exception){
+        return exception.getMessage();
     }
 }
